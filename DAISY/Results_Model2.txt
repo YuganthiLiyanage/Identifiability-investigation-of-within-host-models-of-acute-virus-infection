@@ -1,0 +1,79 @@
+MODEL_2
+
+MODEL EQUATION(S)$
+
+c_ := {df(x1,t)= - beta*x1*x3,
+df(x2,t)=((kdelta + x2)*beta*x1*x3 - delta*x2)/(kdelta + x2),
+df(x3,t)= - c*x3 + pi*x2,
+y1=x3}$
+
+CHARACTERISTIC SET$
+
+aa_(1) := df(y1,t,3)*df(y1,t)**2*y1 + 2*df(y1,t,3)*df(y1,t)*y1**2*c + 2*df(y1,t,3)*df(y1,t)*y1*kdelta*pi + df(
+y1,t,3)*y1**3*c**2 + 2*df(y1,t,3)*y1**2*c*kdelta*pi + df(y1,t,3)*y1*kdelta**2*pi**2 - df(y1,t,2)*df(y1,t)**3 +
+ df(y1,t,2)*df(y1,t)**2*y1**2*beta - df(y1,t,2)*df(y1,t)**2*y1*c - 2*df(y1,t,2)*df(y1,t)**2*kdelta*pi + 2*df(
+y1,t,2)*df(y1,t)*y1**3*beta*c + df(y1,t,2)*df(y1,t)*y1**2*(2*beta*kdelta*pi + c**2) - df(y1,t,2)*df(y1,t)*
+kdelta**2*pi**2 + df(y1,t,2)*y1**4*beta*c**2 + df(y1,t,2)*y1**3*c*(2*beta*kdelta*pi + c**2) + df(y1,t,2)*y1**2
+*kdelta*pi*(beta*kdelta*pi + 2*c**2) + df(y1,t,2)*y1*kdelta*pi**2*(c*kdelta + delta) - df(y1,t)**4*c + df(y1,t
+)**3*y1**2*beta*c - 2*df(y1,t)**3*y1*c**2 + df(y1,t)**3*pi*( - 2*c*kdelta - delta) + 2*df(y1,t)**2*y1**3*beta*
+c**2 + df(y1,t)**2*y1**2*(2*beta*c*kdelta*pi + beta*delta*pi - c**3) - 2*df(y1,t)**2*y1*c*pi*(c*kdelta + delta
+) - df(y1,t)**2*kdelta*pi**2*(c*kdelta + delta) + df(y1,t)*y1**4*beta*c**3 + 2*df(y1,t)*y1**3*beta*c*pi*(c*
+kdelta + delta) + df(y1,t)*y1**2*pi*(beta*c*kdelta**2*pi + beta*delta*kdelta*pi - c**2*delta) + y1**4*beta*c**
+2*delta*pi + y1**3*beta*c*delta*kdelta*pi**2$
+
+aa_(2) := df(y1,t,2)*df(y1,t) + df(y1,t,2)*y1*c + df(y1,t,2)*kdelta*pi + df(y1,t)**2*c - df(y1,t)*x1*y1*beta*
+pi + df(y1,t)*y1*c**2 + df(y1,t)*pi*(c*kdelta + delta) - x1*y1**2*beta*c*pi - x1*y1*beta*kdelta*pi**2 + y1*c*
+delta*pi$
+
+aa_(3) := df(y1,t) - x2*pi + y1*c$
+
+aa_(4) :=  - x3 + y1$
+
+MODEL ALGEBRAICALLY OBSERVABLE$
+
+PARAMETER VALUES$
+
+b2_ := {beta=2,delta=3,kdelta=5,pi=7,c=11}$
+
+MODEL PARAMETER SOLUTION(S)$
+
+g_ := {{delta=21/pi,beta=2,kdelta=35/pi,c=11}}$
+
+MODEL NON IDENTIFIABLE$
+
+IDENTIFIABILITY WITH ALL INITIAL CONDITIONS (IC_)$
+
+ic_ := {x1=x10,x2=x20,x3=x30}$
+
+MODEL PARAMETER SOLUTIONS$
+
+gi_ := {{delta=3,beta=2,kdelta=5,pi=7,c=11}}$
+
+MODEL GLOBALLY IDENTIFIABLE$
+
+3:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
