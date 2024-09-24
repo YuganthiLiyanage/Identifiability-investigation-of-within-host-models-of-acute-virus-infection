@@ -1,0 +1,116 @@
+%Profile-likelihood TIV model
+%oct 11 
+clear all
+
+%best fit
+parm_best=[4.81E-06	1.472293445	1.175530624	1.47532971];
+parm_best=[log(parm_best(1)) parm_best(2:end)];
+ssq_best=21.11627339;
+
+%%
+%profile likelihood
+f=@(parms) TIV_simple_ssq(parms);
+maxPar_dec=[-13.8155 0.1 0.1 0.1];
+maxPar_inc=[-9 20 20 20];
+% maxPar_dec=[-12 14 8 0.1 2];
+% maxPar_inc=[-8.2 14.92 13.1 10 10];% 90 pts
+thresh = chi2inv(0.9,length(1))+ssq_best;%chi2inv(0.5,length(parm1)); %threshold - chi square distribution
+lb=[1e-6,0,0,0];
+lb=[log(lb(1)) lb(2:4)];
+ub=[1e-4,25,1e2, 25];
+ub=[log(ub(1)) ub(2:4)];
+opts = optimset('TolFun',1e-9,'TolX',1e-5,'display','off');
+minStep = [0.001 0.005 0.01 0.01]; %minimal step factor
+maxStep = [0.001 0.005 0.01 0.01]; %maximal step factor
+minChange = 0.01; %0.01; %minimal change of resnorm
+maxChange = 100;%[1 0.5 0.5 0.5 0.5]; %1; %maximal change of resnorm
+nr = 50000; %no. of samples in profile likelihood
+
+%%
+%increasing profiles
+parInc{1}=(0);resInc{1}=(0);
+%increasing profiles
+for i=1:length(parm_best)
+[plPar,plRes]=PLA_fmincon(f,parm_best,i,maxPar_inc(i),thresh,opts,minStep(i),maxStep(i),minChange,maxChange,nr,lb,ub);
+parInc{i} = plPar;
+resInc{i} = plRes;
+end
+
+%%
+%decreasing profiles
+parDec{1}=(0);resDec{1}=(0);
+% minStep = [0.001 0.005 0.01 0.01 0.001]; %minimal step factor
+% maxStep = [0.001 0.005 0.01 0.01 0.001]; %maximal step factor
+for i=1:length(parm_best)
+[plPar,plRes]=PLA_fmincon(f,parm_best,i,maxPar_dec(i),thresh, opts,minStep(i),maxStep(i),minChange,maxChange,nr,lb,ub);
+parDec{i} = fliplr(plPar);
+resDec{i} = fliplr(plRes);
+end
+
+%thresh1=chi2inv(0.5,length(parm_best));
+thresh2=chi2inv(0.9,length(1));
+
+%%
+%plot profile
+thresh2=chi2inv(0.9,length(1));
+parmnames=["\beta","\delta","p","c"];
+figure
+hold on
+for i=1:length(parm_best)
+    size_sp=length(parDec{i})+length(parInc{i});
+%  if i<2
+%  subplot(2,3,i)
+%  plot(exp([parDec{i} parInc{i}]), [resDec{i} resInc{i}], 'Linewidth',2); 
+%  hold on
+% %  plot(exp([parDec{i} parInc{i}]), (thresh1)*ones(size_sp,1), 'k--','Linewidth',2); 
+% %  hold on
+%  plot(exp([parDec{i} parInc{i}]), ssq_best+(thresh2)*ones(size_sp,1),'k--', 'Linewidth',2); 
+%  hold on
+%  plot(exp(parm_best(i)),ssq_best,'*r')
+%  xlabel(parmnames(i))
+%  ylabel('J_i')
+%  else
+ subplot(2,3,i)
+ plot([parDec{i} parInc{i}], [resDec{i} resInc{i}], 'Linewidth',2); 
+ hold on
+%  plot(([parDec{i} parInc{i}]), (thresh1)*ones(size_sp,1), 'k--','Linewidth',2); 
+%  hold on
+ plot(([parDec{i} parInc{i}]), ssq_best+(thresh2)*ones(size_sp,1),'k--', 'Linewidth',2); 
+ hold on
+ plot(parm_best(i),ssq_best,'*r') 
+ xlabel(parmnames(i))
+ ylabel('J')
+ %end
+end
+
+%obj calculation
+function ssq=TIV_simple_ssq(parms)
+
+data_time=[1	2	3	4	5	6	7	8	9];
+data_virus=[4.19	5.68	6.01	5.94	5.98	5.45	5.20	4.01	0.00
+3.99	5.48	5.84	5.82	5.81	5.09	4.49	0.00	0.00
+3.49	5.45	5.81	5.84	5.78	5.30	5.02	2.95	0.00
+3.30	5.77	6.25	5.49	5.96	5.14	5.52	3.24	0.00
+4.76	5.96	6.45	5.78	5.83	5.99	4.97	0.00	0.00
+4.30	5.49	6.86	5.71	5.80	4.96	4.48	0.00	0.00
+3.49	5.80	5.75	6.03	5.82	5.30	5.17	3.26	0.00
+4.01	6.03	5.84	6.26	6.13	5.19	4.84	0.00	0.00
+3.49	6.19	5.79	5.60	5.98	5.34	5.48	0.00	0.00
+4.51	6.17	6.03	5.49	5.34	5.81	5.01	0.00	0.00];
+
+mean_virus=mean(data_virus);
+var_virus=var(data_virus);
+var_virus(9)=1; %avoid dividing by zero variance
+
+
+%ICs
+T0=1e7; I0=75; V0=0;
+Y0=[T0 I0 V0];%ode
+
+% opts=odeset('RelTol',1e-6, 'AbsTol',1e-9);
+sol=ode15s(@TIV_simple_ODE, [0 9], Y0, [], parms);
+
+V_model = deval(sol, data_time, 3);
+
+ssq=sum(((log10(V_model) - mean_virus).^2)./var_virus);
+end
